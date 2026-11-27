@@ -65,15 +65,7 @@ jobs:
         working-directory: ${{ steps.project.outputs.dir }}
         run: |
           set -euo pipefail
-          keytool -genkeypair -v \\
-            -keystore debug.keystore \\
-            -storepass android \\
-            -alias androiddebugkey \\
-            -keypass android \\
-            -dname "CN=Android Debug,O=Android,C=US" \\
-            -keyalg RSA \\
-            -keysize 2048 \\
-            -validity 10000
+          keytool -genkeypair -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000
 
       - name: Build debug APK
         working-directory: ${{ steps.project.outputs.dir }}
