@@ -1,0 +1,48 @@
+name: Build Pooltool APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Gradle 9.3.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.3.1'
+
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform
+        run: |
+          sdkmanager "platforms;android-36.1" "build-tools;36.0.0"
+
+      - name: Download source ZIP
+        env:
+          SOURCE_URL: "https://www.bulkshare.cloud/api/anonymous-download?id=Iec_HAnSmV"
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 "$SOURCE_URL" -o source.zip
+          mkdir source
+          unzip -q source.zip -d source
+
+      - name: Build debug APK
+        working-directory: source
+        run: |
+          gradle --no-daemon assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pooltool-debug-apk
+          path: source/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
